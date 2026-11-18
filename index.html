@@ -316,17 +316,7 @@ function buildFooter(){
   const nl = libBooks().length;
   const bookItems = BOOKS.map(b=>`<li>${escapeHtml(b.name)}</li>`).join("");
   const incompleteItems = incomplete.map(b=>`<li><strong>${escapeHtml(b.name)}፦</strong> ${escapeHtml(b.note)}</li>`).join("");
-  $("footer").innerHTML = `
-    <section class="app-info" aria-label="የአፑ ይዘት መረጃ">
-      <h3>የአፑ ይዘት ማጠቃለያ</h3>
-      <p>በአሁኑ ስሪት <strong>${BOOKS.length}</strong> የመጽሐፍ ዝርዝሮች ተካተዋል። ይህ ቁጥር የተሟላውን 81 መጻሕፍት ቀኖና አያመለክትም።</p>
-      <details>
-        <summary>የተካተቱትን ${BOOKS.length} መጻሕፍት ይመልከቱ</summary>
-        <ol class="app-book-list">${bookItems}</ol>
-      </details>
-      ${incomplete.length?`<div class="app-incomplete-wrap"><h3 style="margin-top:14px">ይዘታቸው ገና ያልተሟላ ክፍሎች</h3><ul class="app-incomplete">${incompleteItems}</ul></div>`:""}
-      ${nl?`<p>የማብራሪያ ቤተ-መጻሕፍት፦ <strong>${nl}</strong> መጻሕፍት ተካተዋል።</p>`:""}
-    </section>`;
+  $("footer").innerHTML = ""; /* content summary removed */
 }
 
 /* ---------- Rendering ---------- */
@@ -716,8 +706,10 @@ $("dChaps").onclick=e=>{const t=e.target.closest(".dch");if(!t)return;
 $("scrim").onclick=closeDrawer; $("menuBtn").onclick=openDrawer; $("titleBtn").onclick=openDrawer;
 $("pillSearch").onclick=()=>{$("searchToggle").click();};
 const _rr=renderRead;
+window.__firstRead=true;
 renderRead=async function(){await _rr();const b=BOOKS[bookIndex(state.book)];
-  if(b)$("titleBtn").textContent=b.name.replace(/^(የ|ወደ )/,"")+" "+(state.chap+1);};
+  if(b)$("titleBtn").textContent=b.name.replace(/^(የ|ወደ )/,"")+" "+(state.chap+1);
+  if(window.__firstRead){window.__firstRead=false;try{showHome();setNav("home");}catch(e){}}};
 function showHome(){
   state.mode="home";$("searchRow").classList.add("hidden");
   const C=[["📖","መጽሐፍ ቅዱስ","#2f7fd1",()=>{setNav("books");state.mode="read";renderRead();openDrawer();}],
@@ -746,6 +738,8 @@ document.querySelectorAll(".bnav button").forEach(b=>b.onclick=()=>{
 $("sA1").onclick=()=>$("fontMinus").click();$("sA2").onclick=()=>$("fontPlus").click();
 $("sTh").onclick=()=>$("themeBtn").click();$("sPr").onclick=()=>window.print();
 setNav("books");
+/* top-bar chapter button only makes sense while reading a Bible chapter */
+setInterval(function(){var t=$("titleBtn");if(t){var d=(state.mode==="read")?"":"none";if(t.style.display!==d)t.style.display=d;}},250);
 </script>
 <script>
 /* ===== ቅዳሴ: slide viewer (pages are compressed WebP images) ===== */
